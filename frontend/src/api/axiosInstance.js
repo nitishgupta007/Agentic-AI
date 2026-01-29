@@ -14,12 +14,24 @@ axiosInstance.interceptors.request.use((config) => {
 });
 
 axiosInstance.interceptors.response.use(
-  res => res,
-  err => {
-    if (err.response?.status === 401) {
+  (res) => res,
+  (err) => {
+    const status = err.response?.status;
+    const url = err.config?.url || "";
+
+    // ✅ Ignore login API
+    if (status === 401 && !url.includes("/auth/login")) {
       removeToken();
-      window.location.href = "/login";
+
+      // ❌ no hard reload
+      // ❌ no window.location.href
+
+      // Optional soft redirect using SPA (best practice)
+      if (window.location.pathname !== "/login") {
+        window.history.pushState({}, "", "/login");
+      }
     }
+
     return Promise.reject(err);
   }
 );
