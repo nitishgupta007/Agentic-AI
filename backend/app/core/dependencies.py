@@ -12,6 +12,9 @@ def get_current_user(token: str = Depends(oauth2)):
             settings.JWT_SECRET,
             algorithms=[settings.JWT_ALGORITHM]
         )
-        return payload["sub"]
+        return {
+        "email": payload.get("sub"),
+        "role": payload.get("role", "user"),
+        }
     except JWTError:
         raise HTTPException(401, "Invalid token")

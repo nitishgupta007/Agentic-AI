@@ -11,6 +11,13 @@ def hash_password(password):
 def verify_password(password, hashed):
     return pwd.verify(password, hashed)
 
-def create_token(data, expires=60):
-    data["exp"] = datetime.utcnow() + timedelta(minutes=expires)
-    return jwt.encode(data, settings.JWT_SECRET, settings.JWT_ALGORITHM)
+def create_token(data: dict, expires: int = 60):
+    to_encode = data.copy()
+    to_encode["exp"] = datetime.utcnow() + timedelta(minutes=expires)
+
+    return jwt.encode(
+        to_encode,
+        settings.JWT_SECRET,
+        algorithm=settings.JWT_ALGORITHM
+    )
+

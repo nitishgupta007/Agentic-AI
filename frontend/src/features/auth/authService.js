@@ -9,7 +9,7 @@ const login = async (data) => {
 
 const signup = async (data) => {
   const res = await axios.post("/auth/signup", data);
-  setToken(res.data.token);
+  //setToken(res.data.access_token);
   return res.data;
 };
 

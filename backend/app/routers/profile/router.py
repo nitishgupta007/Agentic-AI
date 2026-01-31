@@ -6,7 +6,10 @@ from app.core.dependencies import get_current_user
 router = APIRouter(prefix="/profile", tags=["Profile"])
 
 @router.post("/update_profile")
-def create_or_update_profile(email: str, profile: ProfileRequest):
+def create_or_update_profile(profile: ProfileRequest, current_user: dict = Depends(get_current_user)):
+    
+    email = current_user["email"]
+
     success = upsert_user_profile(
         email=email,
         name=profile.name,
@@ -17,9 +20,8 @@ def create_or_update_profile(email: str, profile: ProfileRequest):
     if not success:
         raise HTTPException(status_code=400, detail="Profile update failed")
 
-    return {
-        "message": "Profile created/updated successfully"
-    }
+    return {"message": "Profile updated successfully"}
+
 
 @router.get("/me", response_model=ProfileResponse)
 def get_my_profile(current_user: dict = Depends(get_current_user)):

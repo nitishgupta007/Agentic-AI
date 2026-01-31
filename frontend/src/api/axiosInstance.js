@@ -19,16 +19,17 @@ axiosInstance.interceptors.response.use(
     const status = err.response?.status;
     const url = err.config?.url || "";
 
-    // ✅ Ignore login API
-    if (status === 401 && !url.includes("/auth/login")) {
+    // 🚫 AUTH endpoints that must NOT trigger redirects
+    const isAuthEndpoint =
+      url.includes("/auth/login") ||
+      url.includes("/auth/forgot-password");
+
+    if (status === 401 && !isAuthEndpoint) {
       removeToken();
 
-      // ❌ no hard reload
-      // ❌ no window.location.href
-
-      // Optional soft redirect using SPA (best practice)
+      // SPA-safe redirect
       if (window.location.pathname !== "/login") {
-        window.history.pushState({}, "", "/login");
+        window.history.replaceState({}, "", "/login");
       }
     }
 
